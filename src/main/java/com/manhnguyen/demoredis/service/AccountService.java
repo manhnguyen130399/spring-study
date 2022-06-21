@@ -1,6 +1,7 @@
 package com.manhnguyen.demoredis.service;
 
 import com.manhnguyen.demoredis.domain.Account;
+import com.manhnguyen.demoredis.producer.AccountProducer;
 import com.manhnguyen.demoredis.repository.IAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,6 +21,8 @@ public class AccountService {
 
     private final IAccountRepository accountRepository;
 
+    private final AccountProducer accountProducer;
+
     @Transactional
     @Cacheable(value = "users")
     public List<Account> getAll() {
@@ -36,7 +39,7 @@ public class AccountService {
 
     @Transactional
     @Caching(evict = @CacheEvict(value = "users", allEntries = true)
-            ,put = @CachePut(value = "user", key = "#id"))
+            , put = @CachePut(value = "user", key = "#id"))
     public Account updateAccount(final Long id, final Account account) throws InvalidPropertiesFormatException {
         final Account account1 = getAccountById(id);
         account1.setCreatedAt(account.getCreatedAt());
@@ -46,21 +49,21 @@ public class AccountService {
     }
 
     @Transactional
-    @Cacheable(value = "user", key = "#id", unless = "#result.id<8")
+//    @Cacheable(value = "user", key = "#id", unless = "#result.id<8")
     public Account getAccountById(final Long id) throws InvalidPropertiesFormatException {
         final Optional<Account> old = accountRepository.findById(id);
-        if(old.isEmpty()){
+        if (old.isEmpty()) {
             throw new InvalidPropertiesFormatException("Not found");
         }
-        return old.get();
+        return accountProducer.sendAccountToQueue(old.get());
     }
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value="user", key = "#id",allEntries=false),
-            @CacheEvict(value="users", allEntries=true)})
+            @CacheEvict(value = "user", key = "#id", allEntries = false),
+            @CacheEvict(value = "users", allEntries = true)})
     public void deleteAccount(final Long id) throws InvalidPropertiesFormatException {
-        Account account = getAccountById(id);
+        final Account account = getAccountById(id);
         accountRepository.delete(account);
     }
 }
