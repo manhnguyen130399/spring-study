@@ -1,0 +1,64 @@
+version: '2'
+services:
+  spring-boot-app:
+    image: spring-boot-app
+    container_name: spring-boot-app
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    ports:
+      - '8080:8080'
+    networks:
+      - redis-test-app
+  mysql:
+    image: 'bitnami/mysql:8.0'
+    container_name: mysql_service
+    restart: always
+    environment:
+      - MYSQL_ROOT_USER=admin1
+      - MYSQL_ROOT_PASSWORD=12345678
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql_data:/bitnami/mysql/data
+    networks:
+      - redis-test-app
+  redis:
+    image: docker.io/bitnami/redis:6.2
+    container_name: redis_service
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/bitnami/redis/data
+    networks:
+      - redis-test-app
+  rabbitmq:
+    image: docker.io/bitnami/rabbitmq:3.8
+    container_name: rabbitmq_service
+    ports:
+      - '4369:4369'
+      - '5672:5672'
+      - '25672:25672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_USERNAME=manhnguyen
+      - RABBITMQ_PASSWORD=manh130399
+      - RABBITMQ_SECURE_PASSWORD=yes
+    volumes:
+      - 'rabbitmq_data:/bitnami'
+    networks:
+      - redis-test-app
+volumes:
+  rabbitmq_data:
+    driver: local
+  redis_data:
+    driver: local
+  mysql_data:
+    driver: local
+networks:
+  redis-test-app:
+    driver: bridge

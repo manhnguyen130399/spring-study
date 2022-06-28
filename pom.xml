@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.manhnguyen</groupId>
-    <artifactId>demo-redis</artifactId>
+    <artifactId>study-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo-redis</name>
-    <description>demo-redis</description>
+    <name>study-spring</name>
+    <description>study-spring</description>
     <properties>
         <java.version>11</java.version>
     </properties>

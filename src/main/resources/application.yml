@@ -1,17 +1,17 @@
 spring:
   redis:
-    host: localhost
+    host: redis
     port: 6379
   datasource:
-    username: root
-    password: 1234
-    url: jdbc:mysql://localhost:3306/shopica
+    username: admin1
+    password: 12345678
+    url: jdbc:mysql://mysql:3306/shopica
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     username: manhnguyen
     password: manh130399
